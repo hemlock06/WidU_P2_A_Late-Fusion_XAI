@@ -50,6 +50,18 @@ def _mlp(in_dim: int, hidden: Tuple[int, ...], out_dim: int,
     return nn.Sequential(*layers)
 
 
+def _bottleneck_encoder(in_dim: int, bottleneck: int, out_dim: int,
+                        dropout: float = 0.5) -> nn.Sequential:
+    """단일 구조 인코더 — in → bottleneck → out (Linear·Dropout·Linear·LayerNorm).
+    세 모달리티(ECG·IMU·SpO2)가 동일 아키텍처를 쓰도록(ECG 병목 방식으로 통일)."""
+    return nn.Sequential(
+        nn.Linear(in_dim, bottleneck),
+        nn.Dropout(dropout),
+        nn.Linear(bottleneck, out_dim),
+        nn.LayerNorm(out_dim),
+    )
+
+
 class GatedFusionModel(nn.Module):
     """게이팅 Late Fusion 5분류 모델.
 
@@ -71,6 +83,7 @@ class GatedFusionModel(nn.Module):
         gate_mode: str = "learned",
         temperature: float = 0.15,
         emb_bottleneck: int = 0,
+        unified_experts: bool = False,
     ):
         """
         gate_mode:
@@ -93,32 +106,38 @@ class GatedFusionModel(nn.Module):
         self.gate_mode = gate_mode
         self.temperature = temperature
         self.emb_bottleneck = emb_bottleneck
+        self.unified_experts = unified_experts
 
-        # ── ECG expert ──
-        # emb_bottleneck > 0: 768 → bottleneck → 128 (병목으로 외울 용량 제한)
-        # emb_bottleneck == 0: 기존 768 → 256 → 128
-        if emb_bottleneck > 0:
-            self.ecg_proj = nn.Sequential(
-                nn.Linear(EMB_DIM, emb_bottleneck),
-                nn.Dropout(0.5),                    # 병목에 강한 dropout
-                nn.Linear(emb_bottleneck, EXPERT_DIM),
-                nn.LayerNorm(EXPERT_DIM),
-            )
+        # ── 모달리티 Expert ──
+        if unified_experts:
+            # 단일 구조: 세 모달 동일 병목 인코더 (in→bn→128). ECG는 기존과 동일,
+            # IMU·SpO2도 같은 아키텍처로 통일 — 동일 연산 반복으로 연산 규칙성 확보.
+            bn = emb_bottleneck if emb_bottleneck > 0 else 32
+            self.ecg_proj    = _bottleneck_encoder(EMB_DIM, bn, EXPERT_DIM)
+            self.imu_expert  = _bottleneck_encoder(IMU_DIM, bn, EXPERT_DIM)
+            self.spo2_expert = _bottleneck_encoder(SPO2_DIM, bn, EXPERT_DIM)
         else:
-            self.ecg_proj = nn.Sequential(
-                nn.Linear(EMB_DIM, 256),
-                nn.LayerNorm(256),
-                nn.GELU(),
-                nn.Dropout(dropout),
-                nn.Linear(256, EXPERT_DIM),
-                nn.LayerNorm(EXPERT_DIM),
-            )
-
-        # ── IMU expert ──
-        self.imu_expert = _mlp(IMU_DIM, (64,), EXPERT_DIM, dropout)
-
-        # ── SpO2 expert ──
-        self.spo2_expert = _mlp(SPO2_DIM, (32,), EXPERT_DIM, dropout)
+            # ── ECG expert (기존) ──
+            # emb_bottleneck > 0: 768 → bottleneck → 128 / == 0: 768 → 256 → 128
+            if emb_bottleneck > 0:
+                self.ecg_proj = nn.Sequential(
+                    nn.Linear(EMB_DIM, emb_bottleneck),
+                    nn.Dropout(0.5),                    # 병목에 강한 dropout
+                    nn.Linear(emb_bottleneck, EXPERT_DIM),
+                    nn.LayerNorm(EXPERT_DIM),
+                )
+            else:
+                self.ecg_proj = nn.Sequential(
+                    nn.Linear(EMB_DIM, 256),
+                    nn.LayerNorm(256),
+                    nn.GELU(),
+                    nn.Dropout(dropout),
+                    nn.Linear(256, EXPERT_DIM),
+                    nn.LayerNorm(EXPERT_DIM),
+                )
+            # ── IMU / SpO2 expert (기존: 모달별 상이 구조) ──
+            self.imu_expert = _mlp(IMU_DIM, (64,), EXPERT_DIM, dropout)
+            self.spo2_expert = _mlp(SPO2_DIM, (32,), EXPERT_DIM, dropout)
 
         # ── 게이팅 네트워크 (learned 모드 전용) ──
         # conf_routed 모드: gate_w = softmax(conf/τ), 학습 파라미터 없음

@@ -1,0 +1,6 @@
+{"variant": "current", "seed": 42, "val": 0.9453789344825877, "test": 0.9362345204294797, "route": {"cardiac_ECG": 0.7076626420021057, "impact_IMU": 0.9079561233520508, "hypoxia_SpO2": 0.9396107196807861}}
+{"variant": "current", "seed": 1, "val": 0.9473195497359501, "test": 0.9356639552908167, "route": {"cardiac_ECG": 0.693973183631897, "impact_IMU": 0.9115023016929626, "hypoxia_SpO2": 0.9433531165122986}}
+{"variant": "current", "seed": 7, "val": 0.9478465907682262, "test": 0.9321428642714922, "route": {"cardiac_ECG": 0.7210347652435303, "impact_IMU": 0.9162616729736328, "hypoxia_SpO2": 0.9378095865249634}}
+{"variant": "unified", "seed": 42, "val": 0.9451747446086027, "test": 0.9297834834220902, "route": {"cardiac_ECG": 0.728690505027771, "impact_IMU": 0.8677549362182617, "hypoxia_SpO2": 0.9262766242027283}}
+{"variant": "unified", "seed": 1, "val": 0.9431538728305584, "test": 0.9368811311200653, "route": {"cardiac_ECG": 0.7324733138084412, "impact_IMU": 0.8752347826957703, "hypoxia_SpO2": 0.9323856830596924}}
+{"variant": "unified", "seed": 7, "val": 0.9451250627806956, "test": 0.9383021822923998, "route": {"cardiac_ECG": 0.7238810658454895, "impact_IMU": 0.8724565505981445, "hypoxia_SpO2": 0.9319760203361511}}
