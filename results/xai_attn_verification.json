@@ -1,0 +1,146 @@
+{
+  "model": "cross_attn p2_cross_attn_44568",
+  "val_macro_f1": 0.9512565722877971,
+  "baseline_macro_f1": 0.9431,
+  "N": 3525,
+  "n_features": 29,
+  "V1_deletion": {
+    "auc_top": 0.1623,
+    "auc_random": 0.4563,
+    "auc_bottom": 0.825,
+    "dF1_top5": 0.7057,
+    "dF1_random5": 0.2131,
+    "dF1_bottom5": 0.0006,
+    "curve_top": [
+      0.9431,
+      0.5845,
+      0.4656,
+      0.2939,
+      0.2645,
+      0.2374,
+      0.2602,
+      0.2043,
+      0.1982,
+      0.0823,
+      0.0678,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667,
+      0.0667
+    ]
+  },
+  "V2_spearman": {
+    "named20_IG_SHAP": [
+      0.995,
+      0.0
+    ],
+    "named20_IG_perm": [
+      0.865,
+      0.0
+    ],
+    "named20_SHAP_perm": [
+      0.874,
+      0.0
+    ],
+    "all29_IG_SHAP": [
+      0.994,
+      0.0
+    ],
+    "all29_IG_perm": [
+      0.714,
+      0.0
+    ],
+    "all29_SHAP_perm": [
+      0.713,
+      0.0
+    ],
+    "ig_top5": [
+      [
+        "jerk_peak",
+        1.331
+      ],
+      [
+        "tilt_change",
+        1.174
+      ],
+      [
+        "ECG",
+        1.04
+      ],
+      [
+        "desat_rate",
+        0.506
+      ],
+      [
+        "dom_freq",
+        0.426
+      ]
+    ],
+    "shap_top5": [
+      [
+        "jerk_peak",
+        0.207
+      ],
+      [
+        "tilt_change",
+        0.165
+      ],
+      [
+        "ECG",
+        0.162
+      ],
+      [
+        "desat_rate",
+        0.097
+      ],
+      [
+        "gyro_energy",
+        0.08
+      ]
+    ],
+    "perm_top5": [
+      [
+        "tilt_change",
+        0.168
+      ],
+      [
+        "ECG",
+        0.161
+      ],
+      [
+        "desat_rate",
+        0.094
+      ],
+      [
+        "jerk_peak",
+        0.08
+      ],
+      [
+        "gyro_energy",
+        0.058
+      ]
+    ]
+  },
+  "V3_ig": {
+    "completeness_mean_rel_err": 1.8159,
+    "completeness_median_rel_err": 0.6311,
+    "sum_attr_mean": 5.2019,
+    "true_gap_mean": 5.0588,
+    "ecg_aux_IG_total": 0.03774
+  }
+}
