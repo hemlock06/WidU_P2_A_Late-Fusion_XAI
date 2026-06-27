@@ -71,3 +71,35 @@ def test_missing_dataset_file_raises_helpful_error(tmp_path):
     msg = str(exc.value)
     assert "version" in msg  # --dataset-version / version 힌트 포함
     assert "p2_synth" in msg
+
+
+def test_caregiver_caution_uses_modality_confidence(monkeypatch):
+    """P2 (C): 보호자 경고가 rhythm_regularity가 아니라 '판정 주도 모달 confidence' 기반.
+    과거(off-by-one)엔 rhythm_regularity를 신호품질로 오용해 모순 경고가 떴다 — 회귀 방지."""
+    import p2fusion.xai as xai
+
+    sample = {
+        "ecg_emb": np.zeros(EMB_DIM, np.float32),
+        # cardiac peak idx2, rhythm_regularity(idx7)=0.9(높음): 과거 로직이면 경고가 떴을 값
+        "ecg_aux": np.array([0.1, 0.1, 0.7, 0.05, 0.05, 0.8, 70.0, 0.9], np.float32),
+        "imu": np.zeros(IMU_DIM, np.float32),
+        "spo2": np.zeros(SPO2_DIM, np.float32),
+        "mask": np.ones(3, np.float32),
+    }
+
+    def _gate(conf_ecg):
+        # gw: ECG dominant / cf: ECG confidence = conf_ecg / pred=2(부정맥)
+        return lambda *a, **k: (
+            np.array([[0.6, 0.2, 0.2]], np.float32),
+            np.array([[conf_ecg, 0.9, 0.9]], np.float32),
+            np.zeros((1, 3, 5), np.float32),
+            np.array([2]),
+        )
+
+    monkeypatch.setattr(xai, "collect_gate", _gate(0.40))  # 확신 낮음 → 경고 발화
+    low = xai.generate_caregiver_message(None, sample, "cpu")
+    assert ("재측정" in low) or ("재확인" in low)
+
+    monkeypatch.setattr(xai, "collect_gate", _gate(0.95))  # 확신 높음 → 경고 없음
+    high = xai.generate_caregiver_message(None, sample, "cpu")
+    assert ("재측정" not in high) and ("재확인" not in high)

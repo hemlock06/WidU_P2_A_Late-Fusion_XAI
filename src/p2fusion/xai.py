@@ -389,6 +389,12 @@ def _plain_features(feats_list, topk: int = 2):
     return out
 
 
+# 보호자 경고 임계: 판정을 주도한 모달의 per-modality confidence(= max softmax, 0~1; 5-class 균등=0.2)
+# 가 이 값 미만이면 "확신 낮음 → 재확인" 경고를 띄운다. 설계/임상 튜닝 가능한 상수.
+# (과거엔 rhythm_regularity[임상 리듬규칙성]를 '신호 품질'로 오용 → 부정맥에서 모순. 수정.)
+_LOW_MODALITY_CONF = 0.5
+
+
 def generate_caregiver_message(
     model, sample: dict[str, np.ndarray], device, steps: int = 64
 ) -> str:
@@ -400,7 +406,11 @@ def generate_caregiver_message(
     gw, cf, ul, pr = collect_gate(model, one, device)
     pred = int(pr[0])
     aux = np.asarray(sample["ecg_aux"])
-    ci, _es, rel = _parse_ecg_aux(aux)
+    ci, _es, _rel = _parse_ecg_aux(aux)
+    # 경고는 '판정을 주도한 모달의 confidence' 기반 (포폴 슬라이드8 ④ NL: [caution] per-modality
+    # confidence %). dom = 어텐션 최다 수신 모달, dom_conf = 그 모달의 unimodal max-softmax 확신도.
+    dom = int(np.argmax(gw[0]))
+    dom_conf = float(cf[0][dom])
 
     head = {
         0: "이상 징후 없음",
@@ -434,9 +444,9 @@ def generate_caregiver_message(
         )
     elif pred == 2:
         lines.append(f"심전도에서 {_CARDIAC_PLAIN[ci]} 소견이 나타났습니다.")
-        if rel > 0.6:
+        if dom_conf < _LOW_MODALITY_CONF:
             lines.append(
-                "다만 측정 신호 품질이 낮아 정확하지 않을 수 있습니다 — 안정 후 재측정을 권합니다."
+                "다만 판정을 주도한 신호의 확신도가 낮아 정확하지 않을 수 있습니다 — 안정 후 재측정·재확인을 권합니다."
             )
 
     lines.append("→ " + _CAREGIVER_ACTION[pred])
