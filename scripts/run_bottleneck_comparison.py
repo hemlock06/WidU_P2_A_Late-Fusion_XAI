@@ -28,7 +28,7 @@ except Exception:
 
 from p2fusion.data.dataset import P2Dataset
 from p2fusion.models.gated_fusion import GatedFusionModel
-from p2fusion.schema import CLASS_NAMES, NUM_CLASSES
+from p2fusion.schema import NUM_CLASSES
 
 DATA_DIR = Path(os.environ.get("P2_DATA_DIR", "data")) / "synthetic"
 DEVICE   = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -103,7 +103,7 @@ def main():
     }
 
     print(f"Device: {DEVICE} | epochs={args.epochs} | seeds={seeds}")
-    print(f"Dataset: vf (누출없음, MVN IMU)")
+    print("Dataset: vf (누출없음, MVN IMU)")
 
     results = {k: {"val": [], "test": [], "cardiac": [], "gap": []} for k in VARIANTS}
 
@@ -170,7 +170,7 @@ def main():
 
     # 요약
     print(f"\n{'='*80}")
-    print(f"  3-시드 요약 (mean±std)")
+    print("  3-시드 요약 (mean±std)")
     print(f"{'='*80}")
     hdr = f"{'variant':<10}{'val':>10}{'test':>10}{'cardiac':>10}{'gap':>10}"
     print(hdr); print("-"*len(hdr))

@@ -169,7 +169,7 @@ def main():
                   f"p25={np.percentile(w,25):.3f}  p75={np.percentile(w,75):.3f}")
 
         # 클래스별 평균 gate_weight
-        print(f"\n  클래스별 평균 gate_weights (동적이면 클래스마다 달라야 함):")
+        print("\n  클래스별 평균 gate_weights (동적이면 클래스마다 달라야 함):")
         hdr = f"  {'class':<20}" + "".join(f"{m:>8}" for m in mnames)
         print(hdr)
         for c in range(NUM_CLASSES):
@@ -183,7 +183,7 @@ def main():
               f"({'동적 ✓' if max_ecg_diff > 0.01 else '고정 ✗ — 게이트 붕괴'})")
 
     if conf is not None:
-        print(f"\n  클래스별 평균 confidence (ecg/imu/spo2):")
+        print("\n  클래스별 평균 confidence (ecg/imu/spo2):")
         mnames = ["ecg", "imu", "spo2"]
         hdr = f"  {'class':<20}" + "".join(f"{m:>8}" for m in mnames)
         print(hdr)

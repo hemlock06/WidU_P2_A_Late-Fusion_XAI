@@ -9,7 +9,7 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
 import numpy as np, torch
 from scipy.stats import spearmanr
 from p2fusion.models.gated_fusion import GatedFusionModel
-from p2fusion.schema import IMU_FEATURES, SPO2_FEATURES, CLASS_NAMES
+from p2fusion.schema import IMU_FEATURES, SPO2_FEATURES
 from p2fusion.xai import _AUX_NAMES, integrated_gradients, ig_completeness
 
 RES = ROOT / "results"

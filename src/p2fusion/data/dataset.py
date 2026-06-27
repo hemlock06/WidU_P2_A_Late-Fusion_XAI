@@ -8,7 +8,6 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from p2fusion.schema import EMB_DIM, IMU_DIM, SPO2_DIM
 
 
 class P2Dataset(Dataset):

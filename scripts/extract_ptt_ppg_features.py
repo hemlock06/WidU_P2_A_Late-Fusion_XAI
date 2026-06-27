@@ -207,7 +207,7 @@ def main():
     print(f"저장: {out_path}")
 
     # 피처 통계 (class_priors 보정용)
-    from p2fusion.schema import IMU_FEATURES, SPO2_FEATURES
+    from p2fusion.schema import IMU_FEATURES
     print("\n=== IMU 피처 통계 (sit) ===")
     for i, name in enumerate(IMU_FEATURES):
         v = imu_arr[label_arr==0, i]

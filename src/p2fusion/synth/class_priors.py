@@ -18,7 +18,7 @@ from typing import Dict, Tuple
 
 import numpy as np
 
-from p2fusion.schema import (CARDIAC_PROB_NAMES, IMU_FEATURES, NUM_CARDIAC,
+from p2fusion.schema import (IMU_FEATURES, NUM_CARDIAC,
                              SPO2_FEATURES)
 
 Spec = Tuple[float, float, float, float]  # (mean, std, lo, hi)

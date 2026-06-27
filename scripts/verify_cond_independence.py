@@ -161,8 +161,8 @@ def main():
                 r_cls = np.corrcoef(hr_arr[sel], smv_arr[sel])[0, 1]
                 print(f"  클래스 {cls}({CLASS_NAMES[cls]}) 내 r = {r_cls:.3f}  (N={sel.sum()})")
 
-        print(f"\n  해석: |r|<0.3 → 약한 상관 (독립 가정 적절)")
-        print(f"         |r|>0.5 → 중간, |r|>0.7 → 강한 상관 (합성 가정 위배 주의)")
+        print("\n  해석: |r|<0.3 → 약한 상관 (독립 가정 적절)")
+        print("         |r|>0.5 → 중간, |r|>0.7 → 강한 상관 (합성 가정 위배 주의)")
     else:
         print("  HR 채널 없음 — 상관 분석 불가 (PTT-PPG HR 채널 미포함)")
 

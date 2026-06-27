@@ -176,7 +176,7 @@ def main():
               f"[클래스 혼합, 크게 나오는 게 정상]")
 
         # 클래스 내 상관 (우리 가정 테스트)
-        print(f"\n  클래스 내 r(HR,SMV_std):")
+        print("\n  클래스 내 r(HR,SMV_std):")
         for cls, cls_name in [(0, "normal_rest"), (1, "normal_active")]:
             sel = label_all == cls
             if sel.sum() < 3:
@@ -190,7 +190,7 @@ def main():
             print(f"    [{cls_name}] r={r_cls:+.3f}  N={n}  → {level}")
 
         # HR 분포
-        print(f"\n  HR 분포:")
+        print("\n  HR 분포:")
         for cls, cls_name in [(0, "normal_rest"), (1, "normal_active")]:
             sel = label_all == cls
             if sel.sum() > 0:

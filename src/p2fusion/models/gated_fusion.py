@@ -82,9 +82,9 @@ class GatedFusionModel(nn.Module):
         """
         super().__init__()
         if fusion_level not in ("feature", "logit"):
-            raise ValueError(f"fusion_level must be 'feature' or 'logit'")
+            raise ValueError("fusion_level must be 'feature' or 'logit'")
         if gate_mode not in ("learned", "conf_routed"):
-            raise ValueError(f"gate_mode must be 'learned' or 'conf_routed'")
+            raise ValueError("gate_mode must be 'learned' or 'conf_routed'")
         self.aux_loss_weight = aux_loss_weight
         self.num_classes = num_classes
         self.gate_input_norm = gate_input_norm

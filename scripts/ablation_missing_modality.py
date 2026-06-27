@@ -31,9 +31,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from p2fusion.data.dataset import P2Dataset
 from p2fusion.models.concat_mlp import ConcatMLP
 from p2fusion.models.gated_fusion import GatedFusionModel
-from p2fusion.schema import CLASS_NAMES, NUM_CLASSES
+from p2fusion.schema import CLASS_NAMES
 # 검증된 결측 메커니즘·지표 재사용 (기존 SpO2 케이스와 동일 protocol)
-from run_ablation import predict, macro_f1, per_class_recall, train_one, DEVICE
+from run_ablation import predict, macro_f1, train_one, DEVICE
 
 DATA = Path(os.environ.get("P2_DATA_DIR", "data")) / "synthetic"
 VER = "vf"

@@ -194,7 +194,7 @@ def main():
         lbin_arr= np.concatenate(all_lbin).astype(np.int64)
 
         # 생리지표 추정
-        print(f"  생리지표 추정 중...")
+        print("  생리지표 추정 중...")
         signals_all = np.load(os.path.join(DATA_DIR, split, "signals.npy"))
         hr_bpm, rhythm_reg = estimate_physio(signals_all)
 

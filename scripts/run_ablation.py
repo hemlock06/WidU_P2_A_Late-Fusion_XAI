@@ -179,7 +179,7 @@ def main():
             "sec": time.time() - t0,
         }
         print(f"  params={n_params:,}  val_F1={val_f1:.4f}  clean_test_F1={clean_f1:.4f}  ({results[key]['sec']:.0f}s)")
-        print(f"  recall: " + "  ".join(f"{CLASS_NAMES[c][:6]}={recall[c]:.3f}" for c in range(NUM_CLASSES)))
+        print("  recall: " + "  ".join(f"{CLASS_NAMES[c][:6]}={recall[c]:.3f}" for c in range(NUM_CLASSES)))
         print(f"  결측: drop_ecg={miss['drop_ecg']:.3f}  drop_imu={miss['drop_imu']:.3f}  drop_spo2={miss['drop_spo2']:.3f}")
 
     # ── 비교표 ──

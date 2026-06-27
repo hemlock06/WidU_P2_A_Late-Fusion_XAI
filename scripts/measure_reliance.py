@@ -3,7 +3,7 @@
 reliance[class] = test에서 label==class 샘플의 평균 gate_weights[primary_mod].
 출력: UTF-8 파일 (콘솔 cp949 회피).
 """
-import os, sys, glob, io, json
+import os, sys, glob, io
 from pathlib import Path
 import numpy as np, torch
 _GIT = Path(__file__).resolve().parents[1]
