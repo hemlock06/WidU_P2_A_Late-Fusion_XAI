@@ -17,7 +17,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 
-from p2fusion.schema import EMB_DIM, IMU_DIM, SPO2_DIM, NUM_CLASSES
+from p2fusion.schema import EMB_DIM, IMU_DIM, NUM_CLASSES, SPO2_DIM
 
 ECG_AUX_DIM = 8
 INPUT_DIM = EMB_DIM + ECG_AUX_DIM + IMU_DIM + SPO2_DIM  # 796
@@ -48,7 +48,7 @@ class ConcatMLP(nn.Module):
         layers.append(nn.Linear(in_dim, num_classes))
         self.mlp = nn.Sequential(*layers)
 
-    def forward(self, batch: Dict[str, Tensor]) -> Tensor:
+    def forward(self, batch: dict[str, Tensor]) -> Tensor:
         # 마스크 적용 (결측 모달리티 → 0벡터)
         ecg_emb = batch["ecg_emb"] * batch["mask"][:, 0:1]    # [B,768]
         ecg_aux = batch["ecg_aux"] * batch["mask"][:, 0:1]    # [B,8]

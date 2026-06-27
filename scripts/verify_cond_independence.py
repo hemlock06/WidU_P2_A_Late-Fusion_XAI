@@ -32,7 +32,7 @@ except Exception:
 INTERIM_DIR = Path(os.environ.get("P2_DATA_DIR", "data")) / "interim"
 SYNTH_DIR   = Path(os.environ.get("P2_DATA_DIR", "data")) / "synthetic"
 
-from p2fusion.schema import IMU_FEATURES, CLASS_NAMES
+from p2fusion.schema import CLASS_NAMES, IMU_FEATURES
 
 
 # ─────────────────────────────────────────────────────────────────────────────

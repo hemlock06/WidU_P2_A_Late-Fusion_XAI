@@ -1,15 +1,21 @@
-# -*- coding: utf-8 -*-
 """as-is(자연결측 포함) vs full-mask reliance + test 결측률 — S8 0.40/0.76/0.65 출처 규명."""
-import os, sys, glob, io
+import glob
+import io
+import os
+import sys
 from pathlib import Path
-import numpy as np, torch
+
+import numpy as np
+import torch
+
 _GIT = Path(__file__).resolve().parents[1]
 _DATA = Path(os.environ.get("WIDU_P2_DATA", str(_GIT / "data")))
 os.environ.setdefault("P2_DATA_DIR", str(_DATA))
 sys.path.insert(0, str(_GIT / "src"))
 from p2fusion.data.dataset import make_loaders
-from p2fusion.models.gated_fusion import GatedFusionModel
 from p2fusion.models.cross_modal_attention import CrossModalAttentionFusion
+from p2fusion.models.gated_fusion import GatedFusionModel
+
 DATA = Path(os.environ["P2_DATA_DIR"]) / "synthetic"
 DEV = "cuda" if torch.cuda.is_available() else "cpu"
 MOD=["ECG","IMU","SpO2"]; CLS=["rest","active","cardiac","impact","hypoxia"]; PRIMARY=[None,1,0,1,2]
@@ -34,7 +40,7 @@ def measure(p):
         GW.append(o["gate_weights"].cpu().numpy()); LB.append(b["label"].cpu().numpy()); MK.append(b["mask"].cpu().numpy())
     return np.concatenate(GW),np.concatenate(LB),np.concatenate(MK)
 
-out=io.open(r"C:\Temp\review\reliance2.txt","w",encoding="utf-8"); W=lambda s:out.write(s+"\n")
+out=open(r"C:\Temp\review\reliance2.txt","w",encoding="utf-8"); W=lambda s:out.write(s+"\n")
 def rep(path,tag):
     GW,LB,MK=measure(path)
     W(f"=== {tag} ===  test N={len(LB)}  full-mask frac={(MK.sum(1)>=2.999).mean():.3f}")

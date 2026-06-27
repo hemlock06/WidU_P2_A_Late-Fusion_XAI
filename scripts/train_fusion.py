@@ -32,8 +32,8 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from p2fusion.data.dataset import make_loaders
 from p2fusion.models.concat_mlp import ConcatMLP
-from p2fusion.models.gated_fusion import GatedFusionModel
 from p2fusion.models.cross_modal_attention import CrossModalAttentionFusion
+from p2fusion.models.gated_fusion import GatedFusionModel
 from p2fusion.schema import CLASS_NAMES, NUM_CLASSES
 
 DATA_DIR  = Path(os.environ.get("P2_DATA_DIR", "data")) / "synthetic"

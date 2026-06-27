@@ -1,19 +1,25 @@
-# -*- coding: utf-8 -*-
 """클래스별 Modality Reliance 재측정 (GMU vs cross_attn) — 동일 방법.
 reliance[class] = test에서 label==class 샘플의 평균 gate_weights[primary_mod].
 출력: UTF-8 파일 (콘솔 cp949 회피).
 """
-import os, sys, glob, io
+import glob
+import io
+import os
+import sys
 from pathlib import Path
-import numpy as np, torch
+
+import numpy as np
+import torch
+
 _GIT = Path(__file__).resolve().parents[1]
 _DATA = Path(os.environ.get("WIDU_P2_DATA", str(_GIT / "data")))
 ROOT = str(_GIT)
 os.environ.setdefault("P2_DATA_DIR", str(_DATA))
 sys.path.insert(0, ROOT + r"\src")
 from p2fusion.data.dataset import make_loaders
-from p2fusion.models.gated_fusion import GatedFusionModel
 from p2fusion.models.cross_modal_attention import CrossModalAttentionFusion
+from p2fusion.models.gated_fusion import GatedFusionModel
+
 DATA = Path(os.environ["P2_DATA_DIR"]) / "synthetic"
 DEV = "cuda" if torch.cuda.is_available() else "cpu"
 MOD = ["ECG", "IMU", "SpO2"]
@@ -62,7 +68,7 @@ def per_class_reliance(GW, LB, MK, full_only=False):
         res[name]=(None if p is None else float(mg[p]), mg.tolist(), int(sel.sum()))
     return res
 
-out=io.open(r"C:\Temp\review\reliance_result.txt","w",encoding="utf-8")
+out=open(r"C:\Temp\review\reliance_result.txt","w",encoding="utf-8")
 def W(s): out.write(s+"\n")
 
 # cross_attn: vf, bn=32, epochs=80 (3-seed set)

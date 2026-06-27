@@ -21,8 +21,11 @@ import numpy as np
 import torch
 
 from p2fusion.models.gated_fusion import GatedFusionModel
-from p2fusion.xai import (collect_gate, generate_combined_explanation,
-                          generate_caregiver_message)
+from p2fusion.xai import (
+    collect_gate,
+    generate_caregiver_message,
+    generate_combined_explanation,
+)
 
 _DD   = os.environ.get("P2_DATA_DIR", "data")
 CKPT  = os.path.join(_DD, "checkpoints", "p2_gated_11882", "best_model.pt")

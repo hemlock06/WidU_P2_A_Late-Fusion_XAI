@@ -26,12 +26,12 @@ _CLASS_PRIMARY_MOD = [None, "IMU", "ECG", "IMU", "SpO2"]
 # ecg_aux: 0-4 cardiac_probs, 5 emergency_score, 6 hr_bpm, 7 rhythm_regularity
 
 
-def _to_batch(arrays: Dict[str, np.ndarray], device) -> Dict[str, torch.Tensor]:
+def _to_batch(arrays: dict[str, np.ndarray], device) -> dict[str, torch.Tensor]:
     return {k: torch.as_tensor(v, dtype=torch.float32, device=device) for k, v in arrays.items()}
 
 
 @torch.no_grad()
-def collect_gate(model, arrays: Dict[str, np.ndarray], device, batch_size: int = 1024):
+def collect_gate(model, arrays: dict[str, np.ndarray], device, batch_size: int = 1024):
     """arrays(ecg_emb·ecg_aux·imu·spo2·mask) → (gate_w[N,3], conf[N,3], uni_logits[N,3,5], pred[N]).
 
     GatedFusionModel 전용 (gate_weights·conf_per_modality·unimodal_logits 출력 필요).
@@ -95,7 +95,7 @@ def generate_gate_explanation(pred_class: int,
     return "\n".join(lines)
 
 
-def gate_report(model, arrays_by_group: Dict[str, Dict[str, np.ndarray]], device) -> str:
+def gate_report(model, arrays_by_group: dict[str, dict[str, np.ndarray]], device) -> str:
     """그룹별(클래스/confounder) 게이트 기여 요약 — 어느 모달이 각 그룹을 주도하나."""
     blocks = []
     for name, arrays in arrays_by_group.items():
@@ -119,8 +119,8 @@ _AUX_NAMES = ["p_nsr", "p_af", "p_isch", "p_cond", "p_ecto",
 _IG_KEYS = ["ecg_emb", "ecg_aux", "imu", "spo2"]
 
 
-def integrated_gradients(model, sample: Dict[str, np.ndarray], target: int, device,
-                         steps: int = 64, baseline=None) -> Dict[str, np.ndarray]:
+def integrated_gradients(model, sample: dict[str, np.ndarray], target: int, device,
+                         steps: int = 64, baseline=None) -> dict[str, np.ndarray]:
     """단일 샘플 IG 귀속 → {key: attr[dim]}.
 
     sample: {ecg_emb[768]·ecg_aux[8]·imu[12]·spo2[8]·mask[3]}. baseline=None → 0 기준.
@@ -145,7 +145,7 @@ def integrated_gradients(model, sample: Dict[str, np.ndarray], target: int, devi
     return {k: ((x[k] - base[k]) * grads[k] / steps).cpu().numpy() for k in _IG_KEYS}
 
 
-def aggregate_attribution(attr: Dict[str, np.ndarray]):
+def aggregate_attribution(attr: dict[str, np.ndarray]):
     """IG attr → (모달별 총기여, 모달내 명명 피처 정렬)."""
     per_mod = {
         "ECG":  float(attr["ecg_emb"].sum() + attr["ecg_aux"].sum()),
@@ -161,7 +161,7 @@ def aggregate_attribution(attr: Dict[str, np.ndarray]):
     return per_mod, feats
 
 
-def generate_ig_explanation(pred_class: int, attr: Dict[str, np.ndarray], topk: int = 3) -> str:
+def generate_ig_explanation(pred_class: int, attr: dict[str, np.ndarray], topk: int = 3) -> str:
     """IG 피처 귀속 자연어 — 모달 기여 + 주도 모달 상위 피처."""
     per_mod, feats = aggregate_attribution(attr)
     denom = sum(abs(v) for v in per_mod.values()) + 1e-8
@@ -198,7 +198,7 @@ def ig_completeness(model, sample, target, device, attr):
 _CARDIAC_KO = ["정상리듬(NSR)", "심방세동(AF)", "급성 허혈", "전도 장애", "이소성"]
 
 
-def generate_combined_explanation(model, sample: Dict[str, np.ndarray], device,
+def generate_combined_explanation(model, sample: dict[str, np.ndarray], device,
                                   steps: int = 64) -> str:
     """게이트 라우팅 + IG 피처 + P1 ECG 판독을 한 설명으로 결합 + 기여 분해."""
     # 1. 게이트 XAI (단일 샘플)
@@ -269,7 +269,7 @@ def _plain_features(feats_list, topk: int = 2):
     return out
 
 
-def generate_caregiver_message(model, sample: Dict[str, np.ndarray], device,
+def generate_caregiver_message(model, sample: dict[str, np.ndarray], device,
                                steps: int = 64) -> str:
     """보호자용 평이어 알림 — 3계층 XAI를 일상 언어로 번역."""
     one = {k: np.asarray(sample[k])[None] for k in ("ecg_emb", "ecg_aux", "imu", "spo2", "mask")}

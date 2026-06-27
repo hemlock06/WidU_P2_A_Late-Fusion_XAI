@@ -1,18 +1,24 @@
-# -*- coding: utf-8 -*-
 """응급 판정 정확도 비교 (GMU vs cross_attn) — 동일 조건 멀티시드.
 핵심: 5-class macro-F1, 클래스별 recall, 그리고 '응급 여부(이진)' recall/precision/F1/miss.
 emergency = {cardiac, impact, hypoxia} (label 2,3,4) vs non = {rest, active}(0,1).
 """
-import os, sys, glob, io
+import glob
+import io
+import os
+import sys
 from pathlib import Path
-import numpy as np, torch
+
+import numpy as np
+import torch
+
 _GIT = Path(__file__).resolve().parents[1]
 _DATA = Path(os.environ.get("WIDU_P2_DATA", str(_GIT / "data")))
 os.environ.setdefault("P2_DATA_DIR", str(_DATA))
 sys.path.insert(0, str(_GIT / "src"))
 from p2fusion.data.dataset import make_loaders
-from p2fusion.models.gated_fusion import GatedFusionModel
 from p2fusion.models.cross_modal_attention import CrossModalAttentionFusion
+from p2fusion.models.gated_fusion import GatedFusionModel
+
 DATA = Path(os.environ["P2_DATA_DIR"]) / "synthetic"
 DEV = "cuda" if torch.cuda.is_available() else "cpu"
 CLS=["rest","active","cardiac","impact","hypoxia"]; EMG={2,3,4}
@@ -64,7 +70,7 @@ def find(model,**kw):
         if all(a.get(k)==v for k,v in kw.items()): out.append(p)
     return out
 
-o=io.open(r"C:\Temp\review\emergency_cmp.txt","w",encoding="utf-8"); W=lambda s:o.write(s+"\n")
+o=open(r"C:\Temp\review\emergency_cmp.txt","w",encoding="utf-8"); W=lambda s:o.write(s+"\n")
 def run(model,tag,**kw):
     paths=find(model,**kw)
     MF=[];PC=[];EM={k:[] for k in ["rec","prec","f1","fa","miss","wrong_type"]}

@@ -18,7 +18,7 @@ import numpy as np
 # ---------------------------------------------------------------------------
 # 클래스 taxonomy (P2 출력 5분류)
 # ---------------------------------------------------------------------------
-CLASS_NAMES: List[str] = [
+CLASS_NAMES: list[str] = [
     "normal_rest",      # 0 정상(안정)
     "normal_active",    # 1 정상(운동/활동)
     "cardiac",          # 2 심혈관계 응급
@@ -36,7 +36,7 @@ NUM_CARDIAC = len(CARDIAC_PROB_NAMES)
 EMB_DIM = 768  # ECG-FM mean-pool 임베딩 차원 (P1)
 
 # IMU 핸드크래프트 피처 (가속도 3축 + 자이로 3축에서 추출)
-IMU_FEATURES: List[str] = [
+IMU_FEATURES: list[str] = [
     "smv_mean",      # 0 신호크기벡터 평균 (정지≈1g)
     "smv_std",       # 1 SMV 표준편차 (활동성)
     "smv_peak",      # 2 SMV 최대 (impact peak, 단위 g)
@@ -53,7 +53,7 @@ IMU_FEATURES: List[str] = [
 IMU_DIM = len(IMU_FEATURES)
 
 # SpO2 피처 (저샘플링·서서히 변하는 신호 → 피처 기반)
-SPO2_FEATURES: List[str] = [
+SPO2_FEATURES: list[str] = [
     "spo2_mean",       # 0 평균 (%)
     "spo2_nadir",      # 1 최저값 (%)
     "spo2_current",    # 2 현재(마지막) 값 (%)
@@ -90,7 +90,7 @@ class MultimodalSample:
     )
 
     # --- 출처 추적 (정직성: 모달리티별 real vs synth) ---
-    src: Dict[str, str] = field(default_factory=dict)
+    src: dict[str, str] = field(default_factory=dict)
 
     def flat_ecg_aux(self) -> np.ndarray:
         """임베딩을 제외한 ECG 보조 피처(P1 score + physio)를 벡터로."""

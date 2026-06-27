@@ -19,15 +19,20 @@ from typing import Dict, List, Optional
 
 import numpy as np
 
-from p2fusion.schema import (EMB_DIM, IMU_FEATURES, MultimodalSample,
-                             NUM_CLASSES, SPO2_FEATURES)
+from p2fusion.schema import (
+    EMB_DIM,
+    IMU_FEATURES,
+    NUM_CLASSES,
+    SPO2_FEATURES,
+    MultimodalSample,
+)
 from p2fusion.synth import class_priors as cp
 
 P1_CACHE_DIR = Path(os.environ.get("P2_DATA_DIR", "data")) / "p1_cache"
 
 # 클래스별 ECG P1 캐시 소스 매핑
 #   키: P2 클래스, 값: cpsc_mc label_mc 값 목록
-_ECG_SRC_LABELS: Dict[int, List[int]] = {
+_ECG_SRC_LABELS: dict[int, list[int]] = {
     0: [0],        # 정상(안정) → NSR
     1: [0],        # 정상(운동) → NSR (IMU로 구분, ECG는 동성빈맥)
     2: [1, 2, 3],  # 심혈관 응급 → AF + Ischemia + Conduction
@@ -53,15 +58,15 @@ class P1Cache:
     """
 
     def __init__(self, cache_dir: Path = P1_CACHE_DIR,
-                 splits: List[str] = None):
+                 splits: list[str] = None):
         if splits is None:
             splits = ["train", "val"]  # 기본: P2 train/val 생성용
 
-        pools: Dict[str, List] = {
+        pools: dict[str, list] = {
             k: [] for k in ["embedding", "cardiac_probs", "emergency_score",
                             "hr_bpm", "rhythm_regularity"]
         }
-        self._label_pool: List[np.ndarray] = []
+        self._label_pool: list[np.ndarray] = []
 
         for split in splits:
             p = cache_dir / f"cpsc_mc_{split}.npz"
@@ -80,7 +85,7 @@ class P1Cache:
         self._splits = splits
 
         # 클래스별 인덱스 미리 계산
-        self._cls_idx: Dict[int, np.ndarray] = {}
+        self._cls_idx: dict[int, np.ndarray] = {}
         for src_labels in set(tuple(v) for v in _ECG_SRC_LABELS.values()):
             for sl in src_labels:
                 if sl not in self._cls_idx:
@@ -184,25 +189,25 @@ class ConditionalAssembler:
             src={"ecg": ecg_tag, "imu": imu_tag, "spo2": spo2_tag},
         )
 
-    def assemble_balanced(self, n_per_class: int) -> List[MultimodalSample]:
-        out: List[MultimodalSample] = []
+    def assemble_balanced(self, n_per_class: int) -> list[MultimodalSample]:
+        out: list[MultimodalSample] = []
         for cls in range(NUM_CLASSES):
             out.extend(self.assemble_one(cls) for _ in range(n_per_class))
         self.rng.shuffle(out)
         return out
 
-    def assemble(self, counts: Optional[List[int]] = None,
-                 n_per_class: int = 2000) -> List[MultimodalSample]:
+    def assemble(self, counts: Optional[list[int]] = None,
+                 n_per_class: int = 2000) -> list[MultimodalSample]:
         if counts is None:
             return self.assemble_balanced(n_per_class)
-        out: List[MultimodalSample] = []
+        out: list[MultimodalSample] = []
         for cls, n in enumerate(counts):
             out.extend(self.assemble_one(cls) for _ in range(n))
         self.rng.shuffle(out)
         return out
 
 
-def samples_to_arrays(samples: List[MultimodalSample]) -> dict:
+def samples_to_arrays(samples: list[MultimodalSample]) -> dict:
     emb     = np.stack([s.ecg_embedding for s in samples])
     ecg_aux = np.stack([s.flat_ecg_aux() for s in samples])
     imu     = np.stack([s.imu_feat for s in samples])

@@ -1,15 +1,20 @@
-# -*- coding: utf-8 -*-
 """Cross-Modal Attention 모델용 XAI 재계산 (SHAP·IG·perm 순위일치 ρ · deletion · IG완결성).
 현재 vf 데이터(ecg_aux=8 → 29 grouped feat). 실측만. 새 json/npz만 생성(기존 GMU 캐시 불변)."""
-import sys, io, json, os
+import io
+import json
+import os
+import sys
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
-import numpy as np, torch
+import numpy as np
+import torch
 from scipy.stats import spearmanr
+
 from p2fusion.models.cross_modal_attention import CrossModalAttentionFusion
 from p2fusion.schema import IMU_FEATURES, SPO2_FEATURES
-from p2fusion.xai import _AUX_NAMES, integrated_gradients, ig_completeness
+from p2fusion.xai import _AUX_NAMES, ig_completeness, integrated_gradients
 
 P2 = Path(os.environ.get("WIDU_P2_DATA", str(ROOT / "data")))
 RES = ROOT / "results"
@@ -53,7 +58,7 @@ def mf1(p, yy):
 base_pred = probs(X).argmax(1); BASE = mf1(base_pred,y)
 out = {"model":"cross_attn p2_cross_attn_44568","val_macro_f1":float(ck.get("val_macro_f1",0)),
        "baseline_macro_f1":round(BASE,4),"N":int(N),"n_features":F}
-log = io.open(r"C:\Temp\review\xai_attn_result.txt","w",encoding="utf-8"); W=lambda s:(log.write(s+"\n"),print(s))
+log = open(r"C:\Temp\review\xai_attn_result.txt","w",encoding="utf-8"); W=lambda s:(log.write(s+"\n"),print(s))
 W(f"[setup] attention baseline macro-F1={BASE:.4f}  N={N}  feat={F}")
 
 # ════════ SHAP: grouped Shapley sampling (125 sample, M perm, bg-mean 마스킹) ════════

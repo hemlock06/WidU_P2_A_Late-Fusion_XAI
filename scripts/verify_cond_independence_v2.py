@@ -31,7 +31,6 @@ PTT_DIR     = Path(os.environ.get("P2_DATA_DIR", "data")) / "raw/ptt_ppg"
 
 from p2fusion.schema import IMU_FEATURES
 
-
 # ─────────────────────────────────────────────────────────────────────────────
 
 def pearson_r(x, y):

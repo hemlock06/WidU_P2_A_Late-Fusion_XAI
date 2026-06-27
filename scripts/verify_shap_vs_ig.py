@@ -1,16 +1,21 @@
-# -*- coding: utf-8 -*-
 """SHAP vs IG XAI 방법 검증 (V1 faithfulness deletion · V2 rank agreement · V3 IG 구조한계).
 모델·데이터·기존 캐시 = 읽기전용. 신규 결과 json만 생성. 실측 수치만."""
-import sys, io, json, os
+import io
+import json
+import os
+import sys
 from pathlib import Path
+
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
-import numpy as np, torch
+import numpy as np
+import torch
 from scipy.stats import spearmanr
+
 from p2fusion.models.gated_fusion import GatedFusionModel
 from p2fusion.schema import IMU_FEATURES, SPO2_FEATURES
-from p2fusion.xai import _AUX_NAMES, integrated_gradients, ig_completeness
+from p2fusion.xai import _AUX_NAMES, ig_completeness, integrated_gradients
 
 RES = ROOT / "results"
 P2 = Path(os.environ.get("P2_DATA_DIR", "data"))

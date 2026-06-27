@@ -23,8 +23,11 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from p2fusion.schema import CLASS_NAMES, NUM_CLASSES  # noqa: E402
-from p2fusion.synth.assembler import (ConditionalAssembler, P1Cache,  # noqa: E402
-                                      samples_to_arrays)
+from p2fusion.synth.assembler import (  # noqa: E402
+    ConditionalAssembler,
+    P1Cache,
+    samples_to_arrays,
+)
 
 DATA_DIR = Path(os.environ.get("P2_DATA_DIR", "data"))
 

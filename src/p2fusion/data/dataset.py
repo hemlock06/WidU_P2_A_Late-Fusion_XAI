@@ -9,7 +9,6 @@ import torch
 from torch.utils.data import Dataset
 
 
-
 class P2Dataset(Dataset):
     """build_synthetic_dataset.py 가 생성한 .npz 를 읽는 Dataset.
 
@@ -35,7 +34,7 @@ class P2Dataset(Dataset):
     def __len__(self) -> int:
         return len(self.labels)
 
-    def __getitem__(self, idx: int) -> Dict[str, torch.Tensor]:
+    def __getitem__(self, idx: int) -> dict[str, torch.Tensor]:
         mask = self.mask[idx].clone()   # [3]
 
         if self.dropout_p > 0.0:
@@ -61,7 +60,7 @@ class P2Dataset(Dataset):
 def make_loaders(data_dir: Path, batch_size: int = 256,
                  modality_dropout_p: float = 0.15,
                  num_workers: int = 0,
-                 version: str = "v1") -> Tuple:
+                 version: str = "v1") -> tuple:
     """train/val/test DataLoader 3개를 반환.
 
     version: 데이터셋 버전 (예: "v1", "v2_mvn")

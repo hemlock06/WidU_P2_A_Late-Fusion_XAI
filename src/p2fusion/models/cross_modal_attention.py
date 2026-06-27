@@ -32,7 +32,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from p2fusion.schema import EMB_DIM, IMU_DIM, SPO2_DIM, NUM_CLASSES
+from p2fusion.schema import EMB_DIM, IMU_DIM, NUM_CLASSES, SPO2_DIM
 
 # ecg_aux 구성 (schema.flat_ecg_aux 순서)
 # [cardiac_probs×5, emergency_score, hr_bpm, rhythm_regularity]
@@ -137,9 +137,9 @@ class CrossModalAttentionFusion(nn.Module):
 
     def forward(
         self,
-        batch: Dict[str, Tensor],
+        batch: dict[str, Tensor],
         return_aux: bool = False,
-    ) -> Dict[str, Tensor]:
+    ) -> dict[str, Tensor]:
         """
         입력 (GatedFusionModel과 동일 인터페이스):
           batch["ecg_emb"]  [B, 768]
@@ -258,7 +258,7 @@ class CrossModalAttentionFusion(nn.Module):
             "conf_per_modality": conf,              # [B, 3]
         }
 
-    def loss(self, batch: Dict[str, Tensor], out: Dict[str, Tensor]) -> Tensor:
+    def loss(self, batch: dict[str, Tensor], out: dict[str, Tensor]) -> Tensor:
         """메인 CE + 보조 unimodal CE."""
         label = batch["label"]
         main_loss = F.cross_entropy(out["logits"], label)

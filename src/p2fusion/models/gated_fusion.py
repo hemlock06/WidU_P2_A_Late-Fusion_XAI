@@ -22,14 +22,14 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch import Tensor
 
-from p2fusion.schema import EMB_DIM, IMU_DIM, SPO2_DIM, NUM_CLASSES
+from p2fusion.schema import EMB_DIM, IMU_DIM, NUM_CLASSES, SPO2_DIM
 
 ECG_AUX_DIM = 8       # schema.flat_ecg_aux: cardiac_probs[5] + emergency_score·hr_bpm·rhythm_regularity
 EXPERT_DIM   = 128   # 모달리티별 공통 expert 출력 차원
 GATE_IN_DIM  = ECG_AUX_DIM + 3 + 3  # ecg_aux + modality_mask + conf(3)
 
 
-def _mlp(in_dim: int, hidden: Tuple[int, ...], out_dim: int,
+def _mlp(in_dim: int, hidden: tuple[int, ...], out_dim: int,
          dropout: float = 0.2) -> nn.Sequential:
     layers = []
     d = in_dim
@@ -63,7 +63,7 @@ class GatedFusionModel(nn.Module):
 
     def __init__(
         self,
-        fusion_hidden: Tuple[int, ...] = (256, 128),
+        fusion_hidden: tuple[int, ...] = (256, 128),
         dropout: float = 0.3,
         aux_loss_weight: float = 0.3,
         num_classes: int = NUM_CLASSES,
@@ -149,9 +149,9 @@ class GatedFusionModel(nn.Module):
 
     def forward(
         self,
-        batch: Dict[str, Tensor],
+        batch: dict[str, Tensor],
         return_aux: bool = False,
-    ) -> Dict[str, Tensor]:
+    ) -> dict[str, Tensor]:
         """
         Returns dict with keys:
           "logits"            [B, 5]    — 메인 fusion logits
@@ -223,8 +223,8 @@ class GatedFusionModel(nn.Module):
 
     def loss(
         self,
-        batch: Dict[str, Tensor],
-        out: Optional[Dict[str, Tensor]] = None,
+        batch: dict[str, Tensor],
+        out: Optional[dict[str, Tensor]] = None,
     ) -> Tensor:
         """메인 CrossEntropy + aux_loss_weight × 평균 unimodal CrossEntropy."""
         if out is None:

@@ -18,10 +18,9 @@ from typing import Dict, Tuple
 
 import numpy as np
 
-from p2fusion.schema import (IMU_FEATURES, NUM_CARDIAC,
-                             SPO2_FEATURES)
+from p2fusion.schema import IMU_FEATURES, NUM_CARDIAC, SPO2_FEATURES
 
-Spec = Tuple[float, float, float, float]  # (mean, std, lo, hi)
+Spec = tuple[float, float, float, float]  # (mean, std, lo, hi)
 
 # ---------------------------------------------------------------------------
 # IMU 피처 사전분포 [클래스 → {피처명: (mean,std,lo,hi)}]
@@ -31,7 +30,7 @@ Spec = Tuple[float, float, float, float]  # (mean, std, lo, hi)
 #   2(cardiac)·4(hypoxia)는 저활동이라 rest(PTT sit) 분포 기반 (IMU로는 rest와 구분 불가
 #   = 모달리티 분리 설계상 정상: 심혈관은 ECG, 저산소는 SpO2가 구분).
 # ---------------------------------------------------------------------------
-IMU_PRIORS: Dict[int, Dict[str, Spec]] = {
+IMU_PRIORS: dict[int, dict[str, Spec]] = {
     # 0 rest ← PTT-PPG sit (n=2855 windows)
     0: {
         "smv_mean": (0.982, 0.012, 0.962, 1.005), "smv_std": (0.002, 0.002, 0.001, 0.007),
@@ -82,7 +81,7 @@ IMU_PRIORS: Dict[int, Dict[str, Spec]] = {
 # ---------------------------------------------------------------------------
 # SpO2 피처 사전분포
 # ---------------------------------------------------------------------------
-SPO2_PRIORS: Dict[int, Dict[str, Spec]] = {
+SPO2_PRIORS: dict[int, dict[str, Spec]] = {
     # 0 정상(안정): 96~99%, 안정
     0: {
         "spo2_mean": (97.5, 1.0, 95.0, 100.0), "spo2_nadir": (96.5, 1.0, 94.0, 99.0),
@@ -126,7 +125,7 @@ SPO2_PRIORS: Dict[int, Dict[str, Spec]] = {
 # ---------------------------------------------------------------------------
 # ※ emergency_score는 P1의 불완전성(AUROC=0.914)을 반영해 클래스 간 중첩 부여.
 #   심혈관(2)이 높지만 깔끔히 분리되진 않음 — 운동/저산소도 일부 상승.
-ECG_PRIORS: Dict[int, Dict[str, Spec]] = {
+ECG_PRIORS: dict[int, dict[str, Spec]] = {
     0: {"emergency_score": (0.10, 0.08, 0.0, 0.45),
         "hr_bpm": (72.0, 8.0, 50.0, 95.0), "rhythm_regularity": (0.93, 0.05, 0.78, 1.0)},
     1: {"emergency_score": (0.25, 0.15, 0.0, 0.65),
@@ -141,7 +140,7 @@ ECG_PRIORS: Dict[int, Dict[str, Spec]] = {
 
 # cardiac_probs 피크 클래스 (Dirichlet 농도의 우세 인덱스)
 #  0 NSR / 1 AF / 2 Ischemia / 3 Conduction / 4 Ectopic
-CARDIAC_PEAK: Dict[int, int] = {0: 0, 1: 0, 2: 1, 3: 0, 4: 0}  # 심혈관만 비-NSR 피크
+CARDIAC_PEAK: dict[int, int] = {0: 0, 1: 0, 2: 1, 3: 0, 4: 0}  # 심혈관만 비-NSR 피크
 CARDIAC_ALPHA_BUMP = 2.5  # 피크 농도 (작을수록 클래스 간 중첩↑, P1 Macro-F1≈0.69 반영)
 
 # 클래스별 임베딩 가우시안 평균의 분리 강도 (synthetic 신호 강도; 2단계서 실임베딩 대체)
@@ -153,7 +152,7 @@ def trunc_normal(rng: np.random.Generator, spec: Spec) -> float:
     return float(np.clip(rng.normal(mean, std), lo, hi))
 
 
-def sample_feature_vector(rng: np.random.Generator, priors: Dict[str, Spec],
+def sample_feature_vector(rng: np.random.Generator, priors: dict[str, Spec],
                           order) -> np.ndarray:
     return np.array([trunc_normal(rng, priors[name]) for name in order],
                     dtype=np.float32)
@@ -169,7 +168,7 @@ def sample_feature_vector(rng: np.random.Generator, priors: Dict[str, Spec],
 #   2·4        ← 실 IMU 없음 → 독립 trunc_normal fallback
 # ---------------------------------------------------------------------------
 
-_MVN_CACHE: Dict[int, tuple] = {}   # cls → (mu, L_chol, lo, hi)
+_MVN_CACHE: dict[int, tuple] = {}   # cls → (mu, L_chol, lo, hi)
 _CALIB_PATH = str(Path(os.environ.get("P2_DATA_DIR", "data")) / "interim" / "imu_calibration.npz")
 _MVN_CLASSES = (0, 1, 3)   # 실데이터 공분산 보존 대상
 
@@ -218,8 +217,8 @@ def sample_imu_mvn(rng: np.random.Generator, cls: int) -> np.ndarray:
 # ---------------------------------------------------------------------------
 # Bootstrap IMU 샘플러 — 실벡터 직접 리샘플 + 지터 (가우시안 가정 없음)
 # ---------------------------------------------------------------------------
-_BOOTSTRAP_CACHE: Dict[int, np.ndarray] = {}  # cls → real vectors [N, 12]
-_BOOTSTRAP_STD: Dict[int, np.ndarray] = {}    # cls → per-feature std (지터 스케일)
+_BOOTSTRAP_CACHE: dict[int, np.ndarray] = {}  # cls → real vectors [N, 12]
+_BOOTSTRAP_STD: dict[int, np.ndarray] = {}    # cls → per-feature std (지터 스케일)
 
 
 def _load_bootstrap_cache() -> None:
