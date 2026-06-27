@@ -16,7 +16,7 @@ P3 활용: gate_weights(동적), unimodal_logits, conf_per_modality
 
 from __future__ import annotations
 
-from typing import Dict, Optional, Tuple
+from typing import Optional
 
 import torch
 import torch.nn as nn

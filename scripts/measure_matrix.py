@@ -1,7 +1,6 @@
 """클래스별 cross-modal attention 행렬 [3x3] (6-seed 평균). row=query, col=key, 행합=1. 순서 ECG,IMU,SpO2."""
 
 import glob
-import io
 import os
 import sys
 from pathlib import Path

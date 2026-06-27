@@ -4,7 +4,6 @@ emergency = {cardiac, impact, hypoxia} (label 2,3,4) vs non = {rest, active}(0,1
 """
 
 import glob
-import io
 import os
 import sys
 from pathlib import Path

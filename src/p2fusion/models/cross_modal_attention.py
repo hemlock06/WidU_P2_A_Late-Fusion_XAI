@@ -26,7 +26,7 @@ P1 점수 실사용:
 
 from __future__ import annotations
 
-from typing import Dict, Optional
+from typing import Optional
 
 import torch
 import torch.nn as nn

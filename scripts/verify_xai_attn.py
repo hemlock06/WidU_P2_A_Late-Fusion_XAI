@@ -1,7 +1,6 @@
 """Cross-Modal Attention 모델용 XAI 재계산 (SHAP·IG·perm 순위일치 ρ · deletion · IG완결성).
 현재 vf 데이터(ecg_aux=8 → 29 grouped feat). 실측만. 새 json/npz만 생성(기존 GMU 캐시 불변)."""
 
-import io
 import json
 import os
 import sys

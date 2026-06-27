@@ -4,7 +4,6 @@ reliance[class] = test에서 label==class 샘플의 평균 gate_weights[primary_
 """
 
 import glob
-import io
 import os
 import sys
 from pathlib import Path
